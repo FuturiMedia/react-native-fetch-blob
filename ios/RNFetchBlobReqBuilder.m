@@ -69,7 +69,7 @@
                 [mheaders setValue:[NSString stringWithFormat:@"%lu",[postData length]] forKey:@"Content-Length"];
                 [mheaders setValue:@"100-continue" forKey:@"Expect"];
                 // appaned boundary to content-type
-                [mheaders setValue:[NSString stringWithFormat:@"multipart/form-data; charset=utf-8; boundary=%@", boundary] forKey:@"content-type"];
+                [mheaders setValue:[NSString stringWithFormat:@"multipart/form-data; boundary=%@", boundary] forKey:@"content-type"];
                 [request setHTTPMethod: method];
                 [request setAllHTTPHeaderFields:mheaders];
                 onComplete(request, [formData length]);
@@ -118,17 +118,17 @@
                     if([orgPath hasPrefix:AL_PREFIX])
                     {
                         
-                        [RNFetchBlobFS readFile:orgPath encoding:nil onComplete:^(NSData *content, NSString * err) {
+                        [RNFetchBlobFS readFile:orgPath encoding:nil onComplete:^(id content, NSString* code, NSString * err) {
                             if(err != nil)
                             {
                                 onComplete(nil, nil);
                             }
                             else
                             {
-                                [request setHTTPBody:content];
+                                [request setHTTPBody:((NSData *)content)];
                                 [request setHTTPMethod: method];
                                 [request setAllHTTPHeaderFields:mheaders];
-                                onComplete(request, [content length]);
+                                onComplete(request, [((NSData *)content) length]);
                             }
                         }];
                         
@@ -222,7 +222,7 @@
                         NSString * orgPath = [content substringFromIndex:[FILE_PREFIX length]];
                         orgPath = [RNFetchBlobFS getPathOfAsset:orgPath];
 
-                        [RNFetchBlobFS readFile:orgPath encoding:nil onComplete:^(NSData *content, NSString * err) {
+                        [RNFetchBlobFS readFile:orgPath encoding:nil onComplete:^(NSData *content, NSString* code, NSString * err) {
                             if(err != nil)
                             {
                                 onComplete(formData, YES);
@@ -277,7 +277,7 @@
     }
 }
 
-+(NSString *) getHeaderIgnoreCases:(NSString *)field fromHeaders:(NSMutableDictionary *) headers {
++(NSString *) getHeaderIgnoreCases:(NSString *)field fromHeaders:(NSDictionary *) headers {
 
     NSString * normalCase = [headers valueForKey:field];
     NSString * ignoredCase = [headers valueForKey:[field lowercaseString]];
